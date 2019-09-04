@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,8 @@ import brian.scheduler.comm.event.ExecuteJobEvent;
 @Component
 public class RedisJobEventProducer implements JobEventProducer<ExecuteJobEvent> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RedisJobEventProducer.class);
+	
 	private static final String REDIS_JOB_STREAM_NAME = "JOB_STREAM";
 	private final RedisTemplate<String, ExecuteJobEvent> redisTemplate;
 	
@@ -37,7 +41,9 @@ public class RedisJobEventProducer implements JobEventProducer<ExecuteJobEvent> 
 		
 		Map<Object, Object> jobsForStream = new LinkedHashMap<>();
 		for(ExecuteJobEvent jobEvent : jobEvents) {
-			jobsForStream.put(jobEvent.getId(), jobEvent);
+			String jobId = jobEvent.getId();
+			LOGGER.debug("Mapping event for Redis Stream. ID: {}", jobId);
+			jobsForStream.put(jobId, jobEvent);
 		}
 		redisTemplate.opsForStream().add(REDIS_JOB_STREAM_NAME, jobsForStream);
 	}
