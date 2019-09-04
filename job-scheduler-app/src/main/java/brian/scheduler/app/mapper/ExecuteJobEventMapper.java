@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import brian.scheduler.app.domain.Job;
 import brian.scheduler.comm.event.ExecuteJobEvent;
 
+/**
+ * Mapper to convert the list of {@link Job}s to a list of {@link ExecuteJobEvent}
+ */
 @Component
 public class ExecuteJobEventMapper implements JobEventMapper<ExecuteJobEvent> {
 

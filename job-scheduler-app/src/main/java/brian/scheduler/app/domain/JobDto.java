@@ -20,7 +20,7 @@ public class JobDto {
 	@Min(value = 1)
 	private final long interval;
 	
-	@NotNull // regex
+	@NotNull // TODO: regex
 	private final String timeUnit;
 	
 	@NotNull
