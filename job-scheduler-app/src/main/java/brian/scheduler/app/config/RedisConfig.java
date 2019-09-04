@@ -10,15 +10,24 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import brian.scheduler.app.domain.Job;
 import brian.scheduler.comm.event.ExecuteJobEvent;
 
+/**
+ * Redis template bean configuration
+ */
 @Configuration
 public class RedisConfig {
 
 	private final RedisConnectionFactory connectionFactory;
 	
+	/**
+	 * @param connectionFactoryIn the Redis connection factory to configure the templates
+	 */
 	public RedisConfig(final RedisConnectionFactory connectionFactoryIn) {
 		connectionFactory = connectionFactoryIn;
 	}
 	
+	/**
+	 * @return the template to add Jobs to Redis
+	 */
 	@Bean
 	public RedisTemplate<String, Job> redisJobTemplate() {
 		
@@ -31,6 +40,9 @@ public class RedisConfig {
 	    return template;
 	}
 	
+	/**
+	 * @return the template to add ExecuteJobEvents to a Redis Stream
+	 */
 	@Bean
 	public RedisTemplate<String, ExecuteJobEvent> redisJobEventTemplate() {
 		
