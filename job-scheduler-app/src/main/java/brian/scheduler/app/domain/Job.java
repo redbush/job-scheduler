@@ -1,14 +1,9 @@
 package brian.scheduler.app.domain;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = Job.Builder.class)
-@JsonTypeInfo(
-		 use = JsonTypeInfo.Id.CLASS,
-		 include = JsonTypeInfo.As.PROPERTY,
-		 property = "@class")
 public class Job {
 
 	private final String id;

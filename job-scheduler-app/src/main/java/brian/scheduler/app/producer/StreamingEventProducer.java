@@ -5,26 +5,29 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import brian.scheduler.app.domain.Job;
 import brian.scheduler.app.mapper.JobEventMapper;
-import brian.scheduler.app.repository.JobRepository;
+import brian.scheduler.app.repository.StreamingJobRepository;
 import brian.scheduler.comm.event.ExecuteJobEvent;
 
 @Component
 public class StreamingEventProducer implements AutoCloseable, Callable<Void> {
 
-	private final JobRepository jobRepository;
+	private static final Logger LOGGER = LoggerFactory.getLogger(StreamingEventProducer.class);
+	
+	private final StreamingJobRepository jobRepository;
 	private final JobEventMapper<ExecuteJobEvent> eventMapper;
 	private final JobEventProducer<ExecuteJobEvent> eventProducer;
 	private final ExecutorService threadPool;
 	
 	public StreamingEventProducer(
-			final JobRepository jobRepositoryIn,
+			final StreamingJobRepository jobRepositoryIn,
 			final JobEventMapper<ExecuteJobEvent> eventMapperIn,
-			final JobEventProducer<ExecuteJobEvent> eventProducerIn,
-			final RedisJobEventProducer jobProducerIn) {
+			final JobEventProducer<ExecuteJobEvent> eventProducerIn) {
 
 		jobRepository = jobRepositoryIn;
 		eventMapper = eventMapperIn;
@@ -40,9 +43,9 @@ public class StreamingEventProducer implements AutoCloseable, Callable<Void> {
 			
 			List<Job> jobs = jobRepository.read();
 			if(jobs != null) {
-				System.out.println("sending event...");
+				LOGGER.debug("Sending events");
 				eventProducer.send(eventMapper.map(jobs));
-			}
+			} // need to bubble interrupt but catch EP errors
 		}
 	}
 
