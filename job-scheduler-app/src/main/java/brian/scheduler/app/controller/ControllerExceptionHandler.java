@@ -14,12 +14,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import brian.scheduler.app.domain.ErrorDto;
 
+/**
+ * Configures exception handling and error responses for the {@link SchedulerController}
+ */
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
 	private static final String ERROR_MSG_DELIMITER = ",";
 	private static final String VALIDATION_ERROR_MSG = "[{0} {1}]";
 
+	/**
+	 * Creates an error response for validation failures
+	 */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 			MethodArgumentNotValidException ex,
@@ -32,6 +38,10 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(new ErrorDto(stringJoiner.toString()), status);
 	}
 
+	/**
+	 * @param exception the exception that was thrown in the controller
+	 * @return the generic error response
+	 */
 	@ExceptionHandler
 	public ResponseEntity<ErrorDto> handleError(final Exception exception) {
 		return new ResponseEntity<>(new ErrorDto("Generic error"), HttpStatus.BAD_REQUEST);

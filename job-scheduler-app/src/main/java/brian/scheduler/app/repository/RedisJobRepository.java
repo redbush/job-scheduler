@@ -155,7 +155,7 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 		 */
 		public static double score(final Job job) {
 			// Overflow?
-			return Long.valueOf(System.nanoTime() + TimeUnit.valueOf(job.getTimeUnit()).toNanos(job.getInterval())).doubleValue();
+			return Long.valueOf(System.nanoTime() + job.getTimeUnit().toNanos(job.getInterval())).doubleValue();
 		}
 	}
 

@@ -16,7 +16,7 @@ public class JobDtoToDomainMapper {
 			.builder()
 			.withId(jobDto.getId())
 			.withInterval(jobDto.getInterval())
-			.withTimeUnit(jobDto.getTimeUnit())
+			.withTimeUnit(TimeUnit.valueOf(jobDto.getTimeUnit()))
 			.withCommand(jobDto.getCommand())
 			.build();
 	}
