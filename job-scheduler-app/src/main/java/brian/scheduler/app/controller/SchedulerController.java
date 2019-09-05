@@ -1,5 +1,7 @@
 package brian.scheduler.app.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,8 @@ import brian.scheduler.app.service.JobService;
 @RestController
 public class SchedulerController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerController.class);
+	
 	private final JobDtoToDomainMapper jobMapper;
 	private final JobService jobService;
 	
@@ -42,6 +46,7 @@ public class SchedulerController {
 	@ResponseStatus(HttpStatus.OK)
 	public void submit(@Validated @RequestBody final JobDto jobDto) throws Exception {
 
+		LOGGER.debug("Submitting job ID: {}", jobDto.getId());
 		jobService.add(jobMapper.map(jobDto));
 	}
 	
