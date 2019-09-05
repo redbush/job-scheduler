@@ -1,0 +1,23 @@
+version: '3'
+services:
+  job-scheduler-app:
+    container_name: job-scheduler-app
+    build: .
+    depends_on:
+    - redis
+    ports:
+    - "8080:8080"
+    links:
+    - redis
+    networks:
+    - job-scheduler-network
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+    - "6379:6379"
+    networks:
+    - job-scheduler-network
+    
+networks:
+  job-scheduler-network:
