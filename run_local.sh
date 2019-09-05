@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Building application..."
-./mvnw clean install -DskipTests
+./mvnw.sh clean install -DskipTests
 
 echo "Building images..."
 docker-compose build
