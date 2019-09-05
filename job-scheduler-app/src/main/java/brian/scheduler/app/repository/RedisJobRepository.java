@@ -32,6 +32,8 @@ import brian.scheduler.app.domain.Job;
 @Component
 public class RedisJobRepository implements StreamingJobRepository, AutoCloseable {
 
+	// TODO: refactor so testable
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(RedisJobRepository.class);
 	
 	private final RedisTemplate<String, Job> redisTemplate;
