@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Component;
 
+import brian.scheduler.app.config.RedisProperties;
 import brian.scheduler.app.domain.Job;
 
 /**
@@ -32,9 +33,9 @@ import brian.scheduler.app.domain.Job;
 public class RedisJobRepository implements StreamingJobRepository, AutoCloseable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RedisJobRepository.class);
-	private static final String REDIS_JOBS_CACHE_KEY = "JOBS";
 	
 	private final RedisTemplate<String, Job> redisTemplate;
+	private final RedisProperties redisProperties;
 	private final BlockingQueue<List<Job>> jobExecutionQueue = new LinkedBlockingQueue<>();
 	private final ExecutorService threadPool;
 	
@@ -44,12 +45,16 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 	 * 
 	 * @param redisTemplateIn the template used to add Jobs to Redis and find Jobs
 	 *                        to execute
+	 * @param redisPropertiesIn the properties containing the job cache key
 	 */
-	public RedisJobRepository(final RedisTemplate<String, Job> redisTemplateIn) {
+	public RedisJobRepository(
+			final RedisTemplate<String, Job> redisTemplateIn,
+			final RedisProperties redisPropertiesIn) {
 		
 		redisTemplate = redisTemplateIn;
+		redisProperties = redisPropertiesIn;
 		threadPool = Executors.newSingleThreadExecutor();
-		threadPool.submit(new JobQueryDaemon(jobExecutionQueue, redisTemplate));
+		threadPool.submit(new JobQueryDaemon(jobExecutionQueue, redisTemplate, redisProperties));
 	}
 	
 	/**
@@ -57,7 +62,7 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 	 */
 	@Override
 	public void add(final Job job) {
-		redisTemplate.opsForZSet().add(REDIS_JOBS_CACHE_KEY, job, ScoreUtil.score(job));
+		redisTemplate.opsForZSet().add(redisProperties.getJobCacheKey(), job, ScoreUtil.score(job));
 	}
 
 	/**
@@ -81,17 +86,21 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 		private static final int QUERY_DELAY = 1000;
 		private final BlockingQueue<List<Job>> jobExecutionQueue;
 		private final RedisTemplate<String, Job> redisTemplate;
+		private final RedisProperties redisProperties;
 		
 		/**
 		 * @param jobExecutionQueueIn the blocking queue to write to which is read to find jobs to execute
 		 * @param redisTemplateIn the template to find and update Jobs
+		 * @param redisPropertiesIn the properties containing the job cache key
 		 */
 		public JobQueryDaemon(
 				final BlockingQueue<List<Job>> jobExecutionQueueIn,
-				final RedisTemplate<String, Job> redisTemplateIn) {
+				final RedisTemplate<String, Job> redisTemplateIn,
+				final RedisProperties redisPropertiesIn) {
 			
 			jobExecutionQueue = jobExecutionQueueIn;
 			redisTemplate = redisTemplateIn;
+			redisProperties = redisPropertiesIn;
 		}
 
 		/**
@@ -106,7 +115,7 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 			while(true) {
 				try {
 					
-					Set<TypedTuple<Job>> jobs = redisTemplate.opsForZSet().rangeByScoreWithScores(REDIS_JOBS_CACHE_KEY, 0, Long.valueOf(System.nanoTime()).doubleValue());
+					Set<TypedTuple<Job>> jobs = redisTemplate.opsForZSet().rangeByScoreWithScores(redisProperties.getJobCacheKey(), 0, Long.valueOf(System.nanoTime()).doubleValue());
 					if(!jobs.isEmpty()) {
 						Set<TypedTuple<Job>> updatedJobs = new LinkedHashSet<>();
 						List<Job> jobsForRead = new LinkedList<>();
@@ -118,7 +127,7 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 							updatedJobs.add(new DefaultTypedTuple<>(job, newScore));
 							jobsForRead.add(job);
 						});
-						redisTemplate.opsForZSet().add(REDIS_JOBS_CACHE_KEY, updatedJobs);
+						redisTemplate.opsForZSet().add(redisProperties.getJobCacheKey(), updatedJobs);
 						jobExecutionQueue.add(jobsForRead);
 					}
 				} catch(Exception e) {

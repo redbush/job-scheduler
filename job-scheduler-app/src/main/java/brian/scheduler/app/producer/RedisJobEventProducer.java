@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import brian.scheduler.app.config.RedisProperties;
 import brian.scheduler.comm.event.ExecuteJobEvent;
 
 /**
@@ -21,15 +22,19 @@ public class RedisJobEventProducer implements JobEventProducer<ExecuteJobEvent> 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RedisJobEventProducer.class);
 	
-	private static final String REDIS_JOB_STREAM_NAME = "JOB_STREAM";
 	private final RedisTemplate<String, ExecuteJobEvent> redisTemplate;
+	private final RedisProperties redisProperties;
 	
 	/**
 	 * @param redisTemplateIn the Redis template to write the events to a stream 
+	 * @param redisPropertiesIn the properties containing the job event stream key
 	 */
-	public RedisJobEventProducer(final RedisTemplate<String, ExecuteJobEvent> redisTemplateIn) {
+	public RedisJobEventProducer(
+			final RedisTemplate<String, ExecuteJobEvent> redisTemplateIn,
+			final RedisProperties redisPropertiesIn) {
 		
 		redisTemplate = redisTemplateIn;
+		redisProperties = redisPropertiesIn;
 	}
 	
 	/**
@@ -45,7 +50,7 @@ public class RedisJobEventProducer implements JobEventProducer<ExecuteJobEvent> 
 			LOGGER.debug("Mapping event for Redis Stream. ID: {}", jobId);
 			jobsForStream.put(jobId, jobEvent);
 		}
-		redisTemplate.opsForStream().add(REDIS_JOB_STREAM_NAME, jobsForStream);
+		redisTemplate.opsForStream().add(redisProperties.getJobEventStreamKey(), jobsForStream);
 	}
 	
 }
