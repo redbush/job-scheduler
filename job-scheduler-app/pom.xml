@@ -21,7 +21,6 @@
 	</properties>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>brian.scheduler</groupId>
 			<artifactId>job-scheduler-communication</artifactId>

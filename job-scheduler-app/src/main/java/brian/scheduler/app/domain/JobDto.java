@@ -2,6 +2,7 @@ package brian.scheduler.app.domain;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -20,7 +21,8 @@ public class JobDto {
 	@Min(value = 1)
 	private final long interval;
 	
-	@NotNull // TODO: regex
+	@NotNull
+	@Pattern(regexp = "^(SECONDS|MINUTES|HOURS|DAYS)$")
 	private final String timeUnit;
 	
 	@NotNull
