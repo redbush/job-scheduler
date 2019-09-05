@@ -131,7 +131,7 @@ public class RedisJobRepository implements StreamingJobRepository, AutoCloseable
 						jobExecutionQueue.add(jobsForRead);
 					}
 				} catch(Exception e) {
-					e.printStackTrace(); // WHAT CAN BE THROWN
+					LOGGER.error("Error updating jobs in Redis", e);
 				}
 				
 				Thread.sleep(QUERY_DELAY);

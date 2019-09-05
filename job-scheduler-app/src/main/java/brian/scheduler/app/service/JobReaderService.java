@@ -56,11 +56,17 @@ public class JobReaderService implements AutoCloseable, Callable<Void> {
 		
 		while(true) {
 			
-			List<Job> jobs = jobRepository.read();
-			if(jobs != null) {
-				LOGGER.debug("Sending events");
-				eventProducer.send(eventMapper.map(jobs));
-			} // need to bubble interrupt but catch EP errors
+			try {
+				List<Job> jobs = jobRepository.read();
+				if(jobs != null) {
+					LOGGER.debug("Sending events");
+					eventProducer.send(eventMapper.map(jobs));
+				} 
+			} catch(InterruptedException e) {
+				throw e;
+			} catch(Exception e) {
+				LOGGER.error("An error occurred sending job events.", e);
+			}
 		}
 	}
 
