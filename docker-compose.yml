@@ -1,12 +1,25 @@
 version: '3'
 services:
-  job-scheduler-app:
-    container_name: job-scheduler-app
-    build: .
+  job-scheduler:
+    container_name: job-scheduler
+    build:
+      context: .
+      dockerfile: Dockerfile-JobScheduler
     depends_on:
     - redis
     ports:
     - "8080:8080"
+    links:
+    - redis
+    networks:
+    - job-scheduler-network
+  job-scheduler-agent:
+    container_name: job-scheduler-agent
+    build:
+      context: .
+      dockerfile: Dockerfile-Agent
+    depends_on:
+    - redis
     links:
     - redis
     networks:

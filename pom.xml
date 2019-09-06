@@ -11,6 +11,7 @@
 	<modules>
 		<module>job-scheduler-app</module>
 		<module>job-scheduler-communication</module>
+		<module>job-scheduler-agent</module>
 	</modules>
 
 </project>

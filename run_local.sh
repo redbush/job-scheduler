@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Building application..."
+echo "Building applications..."
 ./mvnw.sh clean install -DskipTests
 
 echo "Building images..."

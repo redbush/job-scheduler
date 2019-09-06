@@ -1,0 +1,11 @@
+FROM openjdk:8
+MAINTAINER Brian Rosedale <brian.j.rosedale@gmail.com>
+
+ENV APP_HOME /opt/app
+RUN mkdir -p $APP_HOME
+COPY job-scheduler-agent/target/job-scheduler-agent*.jar $APP_HOME/
+RUN mv $APP_HOME/job-scheduler-agent*.jar $APP_HOME/job-scheduler-agent.jar
+
+WORKDIR $APP_HOME
+
+CMD ["java", "-Dspring.profiles.active=docker", "-jar", "job-scheduler-agent.jar"]
