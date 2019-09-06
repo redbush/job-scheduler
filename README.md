@@ -15,23 +15,27 @@ The project contains two services: JobSchedulerApp and JobSchedulerAgent
 
 Splitting the applications into standalone services will allow them to be individually scalable.  
 
-##### Submitting a Job
+#### Submitting a Job
 **URL**: http://localhost:8080/submit  
 **Method**: POST  
 **Content-Type**: application/json  
 **Response**: HTTP 200 / no content
 
-##### JSON Fields
+#### JSON Fields
 - **id**: Job identifier (String)
 - **interval**: How often the job executes. TimeUnit defines what the value is. (Integer)
 - **timeUnit**: Acceptable values: SECONDS,MINUTES,HOURS,DAYS (String)
 - **command**: The shell command to execute (String)
 
-##### Example Body
+#### Example Body
 {"id":"1","interval":"10","timeUnit":"SECONDS","command":"touch /opt/app/test.txt"}  
 
 #### Building and running
-Run script: ./run_local.sh
+Run script: ./run_local.sh  
+Running the above script will run a maven build, build the two docker images for the services, and then run a docker-compose script  
+
+#### Command Verification
+To verify a command was executed on the agent you'll need to connect to the container: docker exec -it job-scheduler-agent /bin/bash  
 
 #### Assumptions
 - Jobs need to be executed per server/agent
