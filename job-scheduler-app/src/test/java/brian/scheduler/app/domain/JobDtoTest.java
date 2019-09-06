@@ -60,7 +60,25 @@ class JobDtoTest {
 		assertEquals(actualViolations.size(), 1);
 		ConstraintViolation<JobDto> actualViolation = actualViolations.iterator().next();
 		assertEquals(actualViolation.getPropertyPath().toString(), "id");
-		assertEquals(actualViolation.getMessage(), "must not be null");
+		assertEquals(actualViolation.getMessage(), "must not be blank");
+	}
+	
+	@Test
+	void validation_IdBlank() {
+		
+		JobDto jobDto = JobDto
+			.builder()
+			.withId("   ")
+			.withInterval(10)
+			.withTimeUnit("MINUTES")
+			.withCommand("ls -al")
+			.build();
+		
+		Set<ConstraintViolation<JobDto>> actualViolations = validator.validate(jobDto);
+		assertEquals(actualViolations.size(), 1);
+		ConstraintViolation<JobDto> actualViolation = actualViolations.iterator().next();
+		assertEquals(actualViolation.getPropertyPath().toString(), "id");
+		assertEquals(actualViolation.getMessage(), "must not be blank");
 	}
 	
 	@Test
@@ -132,7 +150,25 @@ class JobDtoTest {
 		assertEquals(actualViolations.size(), 1);
 		ConstraintViolation<JobDto> actualViolation = actualViolations.iterator().next();
 		assertEquals(actualViolation.getPropertyPath().toString(), "command");
-		assertEquals(actualViolation.getMessage(), "must not be null");
+		assertEquals(actualViolation.getMessage(), "must not be blank");
+	}
+	
+	@Test
+	void validation_CommandBlank() {
+		
+		JobDto jobDto = JobDto
+			.builder()
+			.withId(UUID.randomUUID().toString())
+			.withInterval(10)
+			.withTimeUnit("MINUTES")
+			.withCommand("    ")
+			.build();
+		
+		Set<ConstraintViolation<JobDto>> actualViolations = validator.validate(jobDto);
+		assertEquals(actualViolations.size(), 1);
+		ConstraintViolation<JobDto> actualViolation = actualViolations.iterator().next();
+		assertEquals(actualViolation.getPropertyPath().toString(), "command");
+		assertEquals(actualViolation.getMessage(), "must not be blank");
 	}
 
 }

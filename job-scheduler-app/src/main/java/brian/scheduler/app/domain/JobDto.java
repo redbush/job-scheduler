@@ -1,6 +1,7 @@
 package brian.scheduler.app.domain;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -15,7 +16,7 @@ import brian.scheduler.app.controller.SchedulerController;
 @JsonDeserialize(builder = JobDto.Builder.class)
 public class JobDto {
 
-	@NotNull
+	@NotBlank
 	private final String id;
 	
 	@Min(value = 1)
@@ -25,7 +26,7 @@ public class JobDto {
 	@Pattern(regexp = "^(SECONDS|MINUTES|HOURS|DAYS)$")
 	private final String timeUnit;
 	
-	@NotNull
+	@NotBlank
 	private final String command;
 
 	private JobDto(final Builder builder) {

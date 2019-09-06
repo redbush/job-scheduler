@@ -33,8 +33,9 @@ class JobSchedulerIT {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
+	// TODO: verify interactions with other classes
 	@Test
-	void subit() throws Exception {
+	void submit() throws Exception {
 		
 		JobDto jobDto = JobDto
 			.builder()
@@ -47,6 +48,23 @@ class JobSchedulerIT {
 		mvc.perform(MockMvcRequestBuilders.post("/submit").content(objectMapper.writeValueAsString(jobDto))
 			      .contentType(MediaType.APPLICATION_JSON))
 			      .andExpect(MockMvcResultMatchers.status().isOk());
+	}
+	
+	@Test
+	void submit_ValidationCommandBlank() throws Exception {
+		
+		JobDto jobDto = JobDto
+			.builder()
+			.withId(UUID.randomUUID().toString())
+			.withInterval(1)
+			.withTimeUnit("SECONDS")
+			.withCommand("   ")
+			.build();
+		
+		mvc.perform(MockMvcRequestBuilders.post("/submit").content(objectMapper.writeValueAsString(jobDto))
+			      .contentType(MediaType.APPLICATION_JSON))
+				  .andExpect(MockMvcResultMatchers.content().json("{\"errorMessage\":\"[command must not be blank]\"}"))
+			      .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 	}
 	
 	@TestConfiguration
