@@ -47,3 +47,4 @@ To verify a command was executed on the agent you'll need to connect to the cont
 - Refactor repository structure so testable
 - Separate Redis for stream 
 - Duplicate jobs
+- General cleanup
